@@ -1,0 +1,47 @@
+{
+  "name": "tic-tac-toe",
+  "version": "0.0.1",
+  "description": "Simple tic-tac-toe game.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/harrytruong/tic-tac-toe.git"
+  },
+  "keywords": [
+    "game",
+    "tictactoe"
+  ],
+  "author": "Harry Truong <harry@asdfjkltech.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/harrytruong/tic-tac-toe/issues"
+  },
+  "homepage": "https://github.com/harrytruong/tic-tac-toe#readme",
+  "devDependencies": {
+    "jspm": "^0.16.0-beta.3"
+  },
+  "jspm": {
+    "directories": {
+      "baseURL": "cs/js",
+      "packages": "cs/js/vendor"
+    },
+    "dependencies": {
+      "underscore": "npm:underscore@^1.8.3"
+    },
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.6.4",
+      "babel-runtime": "npm:babel-runtime@^5.6.4",
+      "core-js": "npm:core-js@^0.9.17"
+    }
+  },
+  "jshintConfig": {
+    "esnext": true
+  },
+  "jscsConfig": {
+    "esnext": true,
+    "preset": "google"
+  }
+}
