@@ -4,13 +4,15 @@
  * Harry Truong <harry@asdfjkltech.com>
  */
  
-import Grid from './src/Grid';
-import Intel from './src/Intel';
+import GameView from 'src/views/GameView'
+import $ from 'jquery';
 
-let grid = new Grid(4),
-    intelX = new Intel(grid, 'x','o'),
-    intelO = new Intel(grid, 'o','x');
+$(() => {
+    const game = new GameView();
+    window.game = game;
+});
 
+/*
 window.Turn = function(move){
     let m;
     if (typeof move === 'number') m = grid.mark(move, 'x');

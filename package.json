@@ -4,7 +4,8 @@
   "description": "Simple tic-tac-toe game.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "jspm-bundle": "jspm bundle-sfx app cs/js/app.min.js --minify"
   },
   "repository": {
     "type": "git",
@@ -21,7 +22,7 @@
   },
   "homepage": "https://github.com/harrytruong/tic-tac-toe#readme",
   "devDependencies": {
-    "jspm": "^0.16.0-beta.3"
+    "jspm": "^0.15.7"
   },
   "jspm": {
     "directories": {
@@ -29,12 +30,16 @@
       "packages": "cs/js/vendor"
     },
     "dependencies": {
-      "underscore": "npm:underscore@^1.8.3"
+      "backbone": "github:jashkenas/backbone@^1.2.1",
+      "jquery": "github:components/jquery@^2.1.4",
+      "lodash": "npm:lodash@^3.10.1",
+      "underscore": "npm:lodash@^3.10.1",
+      "ust": "github:harrytruong/ust@master"
     },
     "devDependencies": {
-      "babel": "npm:babel-core@^5.6.4",
-      "babel-runtime": "npm:babel-runtime@^5.6.4",
-      "core-js": "npm:core-js@^0.9.17"
+      "babel": "npm:babel-core@^5.1.13",
+      "babel-runtime": "npm:babel-runtime@^5.1.13",
+      "core-js": "npm:core-js@^0.9.4"
     }
   },
   "jshintConfig": {
