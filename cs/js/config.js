@@ -1,4 +1,5 @@
 System.config({
+  "baseURL": "cs/js",
   "transpiler": "babel",
   "babelOptions": {
     "optional": [
@@ -6,7 +7,6 @@ System.config({
     ]
   },
   "paths": {
-    "*": "*.js",
     "github:*": "vendor/github/*.js",
     "npm:*": "vendor/npm/*.js"
   }
@@ -38,4 +38,3 @@ System.config({
     }
   }
 });
-

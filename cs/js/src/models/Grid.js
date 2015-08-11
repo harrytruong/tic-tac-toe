@@ -75,17 +75,31 @@ const solveGrid = (size) => {
 class Grid extends Backbone.Model {
 
     defaults() { return {
-        size            : 3,  // 3x3 grid
-        solutions       : [], // grid solutions
-        solutionsMap    : [], // solutions, mapped by position
-        data            : [], // grid position marks
-        history         : []  // history of grid marks
+        size            : 3,        // 3x3 grid
+        solutions       : [],       // grid solutions
+        solutionsMap    : [],       // solutions, mapped by position
+        data            : [],       // grid position marks
+        history         : [],       // history of grid marks
+        
+        status          : false,    // see `status()` method
+        
+        turn            : 0,        // 0 or 1 to represent current turn
+        startTurn       : 0,        // 0 or 1 to represent starting turn
+        marks           : ['x','o'] // marks to use
     }; }
     
-    // extend "get" to _.cloneDeep() non-primitive attributes
+    // extend "get" to _.cloneDeep() Array attributes
+    // and extra handler for "turnMark" attribute
     get(attr){
+        if (attr == 'turnMark'){
+            return super.get('marks')[super.get('turn')];
+        }
+        else if (attr == 'lastMark'){
+            return super.get('marks')[super.get('turn')]
+        }
+        
         const val = super.get(attr);
-        return (val instanceof Object) ? _.cloneDeep(val) : val;
+        return (val instanceof Array) ? _.cloneDeep(val) : val;
     }
     
     initialize() {
@@ -95,9 +109,12 @@ class Grid extends Backbone.Model {
         return this.solve().reset();
     }
     
-    // reset "data" and "history" attrs
+    // reset grid attributes
     reset() {
-        return this.resetData().resetHistory()
+        return this.resetData()
+                   .resetHistory()
+                   .resetTurn()
+                   .set('status', false)
                    .trigger("reset", this);
     }
     
@@ -110,6 +127,11 @@ class Grid extends Backbone.Model {
     // set "history" to empty array
     resetHistory() {
         return this.set("history", []);
+    }
+    
+    // set "turn" to "startTurn"
+    resetTurn(){
+        return this.set("turn", this.get("startTurn"));
     }
     
     // set "solutions" and "solutionsMap"
@@ -183,10 +205,11 @@ class Grid extends Backbone.Model {
     mark(position, mark) {
         position = parseInt(position);
         const data = this.get("data"),
-            history = this.get("history");
+            history = this.get("history"),
+            turn = this.get('turn');
         
         // grid status check
-        if (this.status()) {
+        if (this.get('status')) {
             throw "Can't add new marks to solved grid."
         }
         
@@ -199,16 +222,19 @@ class Grid extends Backbone.Model {
         // mark position in data
         data[position] = mark;
         history.push({mark: mark, position: position});
-        this.set({ data: data, history: history });
         
-        // check and return grid status
-        const status = this.status();
-        if (status) {
-            let solved = status instanceof Array ? mark : "tied";
-            this.trigger(`solved solved:${solved}`, this, status);
-        }
+        // update attributes
+        const status = this.set({
+            data: data,
+            history: history,
+            turn: (turn+1) & 1
+        }).status(); // get grid status
         
-        return status;
+        // if gameover, flip the starting turn
+        if (status) this.set('startTurn', (this.get('startTurn')+1)&1);
+        
+        // trigger "mark" event
+        return this.trigger('mark', this, status, position, mark);
     }
     
     status(){
@@ -232,9 +258,17 @@ class Grid extends Backbone.Model {
                                this.get("solutionsMap")[last.position]),
             
             // check if solved, based on last position's solutions
-            solved = findPickEveryEq(last.mark, data, solutions);
+            solved = findPickEveryEq(last.mark, data, solutions),
         
-        return solved ? solved : gameover;
+            // determine final status
+            status =  solved ? solved : gameover;
+        
+        this.set('status', status);
+        return status;
+    }
+    
+    turn(){
+        
     }
 }
 

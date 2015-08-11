@@ -1,0 +1,81 @@
+html, body{
+    min-width: 600px;
+    overflow-x: auto;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    padding-bottom: 100px;
+}
+
+.grid {
+    display: block;
+    padding: 30px;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.grid .grid-info{
+    height: 30px;
+    display: block;
+}
+
+.grid table {
+    width: 500px;
+    height: 500px;
+    margin: 0 auto;
+}
+
+.grid td {
+    vertical-align: middle;
+    border: 2px solid #ccc;
+}
+
+.grid tr:first-child td {
+  border-top: 0;
+}
+.grid tr:last-child td {
+  border-bottom: 0;
+}
+.grid tr td:first-child {
+  border-left: 0;
+}
+.grid tr td:last-child {
+  border-right: 0;
+}
+
+.grid td:hover {
+    background: #eee;
+}
+
+.controls, .ai {
+    border: 1px solid #eee;
+    margin: 50px;
+    padding: 10px 30px;
+    width: 400px;
+    display: block;
+    margin: 0 auto 30px;
+}
+
+.controls ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.controls li {
+    border-bottom: 1px dotted #ddd;
+    padding: 10px;
+}
+
+.controls .float-right {
+    float: right;
+}
+
+.controls .float-right:after {
+    clear: both;
+}
+
+.controls .input {
+    width: 50px;
+    text-align: center;
+    border: none;
+    background: transparent;
+}

@@ -1,7 +1,51 @@
-<ust:main>
-<p>foo</p>
-</ust:main>
+<ust:grid>
+<% var s = this.grid.get("size"), p = (100 / s).toFixed(2), disable; %>
+<h1>Tic-Tac-Toe (<%= s+'&times;'+s %>)</h1>
+<p class="grid-info"></p>
+<table>
+<% for (var i = 0; i < s; i++){ %>
+    <tr>
+        <% for (var j = 0; j < s; j++){ %>
+        <% var pos = (i*s) + j; %>
+        <td style="width:<%- p %>%;height:<%- p %>%;"
+            data-position="<%- pos %>"
+            class="position">
+            <%= this.ust('grid-box', {
+                pos: pos,
+                mark: this.grid.get('data')[pos]
+            }) %>
+        </td>
+        <% } %>
+    </tr>
+<% } %>
+</table>
+</ust:grid>
 
-<ust:bar>
-<p>bar</p>
-</ust:bar>
+<ust:grid-box>
+<h1 class="position-<%- data.pos %>"><%- data.mark %></h1>
+</ust:grid-box>
+
+<ust:controls>
+<% var size = this.grid.get('size'), ai = this.ai.length; %>
+<ul>
+    <li>
+        <label>grid size <span class="float-right"><input class="input" type="number" min="2" name="grid-size" value="<%- size %>" /></span></label>
+    </li>
+    <li>
+        game mode <span class="float-right"><label><input type="radio" name="grid-ai" value="0" <%- ai == 0 && 'checked' %>> 0-AI</label> <label><input type="radio" name="grid-ai" value="1" <%- ai == 1 && 'checked' %>> 1-AI</label> <label><input type="radio" name="grid-ai" value="2" <%- ai == 2 && 'checked' %>> 2-AI</label></span>
+    </li>
+</ul>
+<p>
+    <button class="grid-reset">Restart</button>
+    <button class="float-right grid-update">Update</button>
+</p>
+</ust:controls>
+
+<ust:ai>
+<% var ais = this.ai, sol = this.grid.get('solutions'); %>
+<p>AI Intelligence <small>(like ATM Machine)</small></p>
+<% if (ais.length == 0){ %><p>No AIs enabled.</p><% } %>
+<% for (var i in ais){ var ai = ais[i], know = ai.get("knowledge"); %>
+    <p><strong><%= ai.get('goodMark') %> <%- know.length %> / <%- sol.length %></strong> &mdash; <%- JSON.stringify(know) %></p>
+<% } %>
+</ust:ai>

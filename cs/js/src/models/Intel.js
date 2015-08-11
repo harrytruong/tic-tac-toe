@@ -23,10 +23,10 @@ class Intel extends Backbone.Model {
         knowledge       : [],         // known grid solutions
     }; }
     
-    // extend "get" to _.cloneDeep() non-primitive attributes
+    // extend "get" to _.cloneDeep() Array attributes
     get(attr){
         const val = super.get(attr);
-        return (val instanceof Object) ? _.cloneDeep(val) : val;
+        return (val instanceof Array) ? _.cloneDeep(val) : val;
     }
     
     initialize() {
@@ -48,8 +48,10 @@ class Intel extends Backbone.Model {
         
         // if solution not present in knowledge, add it
         for (let solution of solutions) {
-            if (! anyEq(knowledge, solution)) knowledge.push(solution);
+            if (! anyEq(solution, knowledge)) knowledge.push(solution);
         }
+        
+        return this.set('knowledge', knowledge);
     }
 
     // predict best move, based on known solutions
@@ -170,6 +172,23 @@ class Intel extends Backbone.Model {
         return plans;
     }
     
+    // attach event listeners to auto-play grid
+    autoPlay(){
+        const grid = this.get('grid'),
+            goodMark = this.get('goodMark'),
+            badMark = this.get('badMark');
+        
+        this.listenTo(grid, 'mark reset', function(){
+            const status = grid.get('status'),
+                turnMark = grid.get('turnMark');
+            if (status instanceof Array) this.learn(status);
+            if (status === false && turnMark === goodMark) {
+                setTimeout(() => {
+                    grid.mark(this.think(), goodMark);
+                }, 1000);
+            }
+        });
+    }
 }
 
 export default Intel;
