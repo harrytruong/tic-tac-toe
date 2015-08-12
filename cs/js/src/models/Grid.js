@@ -8,24 +8,26 @@ import _ from 'lodash';
 import Backbone from 'backbone';
 
 // Generic helpers
-const everyEq = (match, data) =>
-        _.every(data, _.partial(_.eq, match)),
-    // ex: everyEq(null, [null, null])      ==> true
-    // ex: everyEq(null, [1, null])         ==> false
-
-    findPick = (data, picks, predicate) =>
-        _.find(picks, (pick) => predicate(_.pick(data, pick))),
-    // ex: findPick(
-    //     [null, 1, 2],
-    //     [[0], [0, 1], [1, 2]],
-    //     (v) => _.includes(v, 2))         ==> [1, 2]
-
-    findPickEveryEq = (match, data, picks) =>
-        findPick(data, picks, _.partial(everyEq, match));
+const findPickEveryEq = (match, data, picks) =>
+    
+    // find among `picks`
+    _.find(picks, _.ary(_.flow(
+        
+        // (do _.pick() `data`)
+        _.partial(_.pick, data),
+        
+        // where _.every() _.pick() from `data` _.isEqual() to `match`
+        _.partial(_.every, _, _.partial(_.isEqual, match))
+    ), 1));
+    
+    // note: _.curry() usage was removed,
+    //       in favor of _.partial().
+    
     // ex: findPickEveryEq(
     //     1,
     //     [1, 2, 3, 2, 1],
     //     [[0, 1], [2], [2, 3], [0, 4]])   ==> [0, 4]
+
 
 // Grid Solutions helper
 const solveGrid = (size) => {
@@ -265,10 +267,6 @@ class Grid extends Backbone.Model {
         
         this.set('status', status);
         return status;
-    }
-    
-    turn(){
-        
     }
 }
 

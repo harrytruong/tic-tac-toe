@@ -9,8 +9,8 @@ import Backbone from 'backbone';
 import Grid from './Grid';
 
 // Generic helpers
-const anyEq = (match, data) =>
-        _.any(data, _.partial(_.eq, match));
+const anyEq = (needle, haystack) =>
+        _.any(haystack, _.partial(_.eq, needle));
     // ex: anyEq(1, [1, 2])         ==> true
     // ex: anyEq(null, [1, 2])      ==> false
 
