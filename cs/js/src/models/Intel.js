@@ -62,14 +62,11 @@ class Intel extends Backbone.Model {
             plans = this.plans(),
             
             // overall intelligence weight, based on positions length
-            weight = data.length,
-            
-            // default starting rank value
-            defaultRank = -1 * weight,
+            size = this.get('grid').get('size'),
             
             // start ranking all possible moves ("null" positions)
             moveRanks = _.reduce(data, (moveRanks, mark, pos) => {
-                if (mark === null) moveRanks[pos] = defaultRank;
+                if (mark === null) moveRanks[pos] = 0;
                 return moveRanks;
             }, {});
         
@@ -77,15 +74,30 @@ class Intel extends Backbone.Model {
         for (let type in plans){
             
             // adjust value based on plan type
-            let planValue = (type == 'defense' ? 3 :
-                            (type == 'offense' ? 2 : 1))
-                            * weight;
+            let planValue = (type == 'defense' ? 2/size :
+                            (type == 'offense' ? 1/size : 0));
             
             for (let plan of plans[type]){
                 
+                // win immediately, if offensive plan has one remaining move
+                if (type == 'offense' &&
+                    plan.count[null] === 1) {
+                    
+                    // plan.state = {
+                    //     '0': null
+                    //     '1': 'o'
+                    //     '2': 'o'
+                    // }
+                    
+                    return parseInt(_.reduce(plan.state, (key, value, index) => {
+                        if (key) return key;
+                        if (value === null) return index;
+                    }, null));
+                }
+                
                 // adjust value based on moves left
                 // i.e., place priority on plans with fewer remaining moves
-                let moveValue = -1 * plan.count[null];
+                let moveValue = Math.pow(size, size - plan.count[null]);
                 
                 // example the current state for this plan
                 for (let pos in plan.state){
@@ -114,7 +126,7 @@ class Intel extends Backbone.Model {
             
             return bestMove;
         }, {
-            rank: defaultRank,
+            rank: 0,
             positions: []
         });
         
@@ -138,7 +150,7 @@ class Intel extends Backbone.Model {
         for (let solution of knowledge){
             let state = _.pick(data, solution),
                 count = _.countBy(state),
-                type;
+                type = false;
             
             // skip solutions where no moves left
             if (! count[null]) continue;
