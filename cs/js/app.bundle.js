@@ -13190,14 +13190,11 @@ System.register('src/models/Intel', ['npm:babel-runtime@5.8.20/helpers/get', 'np
                         plans = this.plans(),
 
                         // overall intelligence weight, based on positions length
-                        weight = data.length,
-
-                        // default starting rank value
-                        defaultRank = -1 * weight,
+                        size = this.get('grid').get('size'),
 
                         // start ranking all possible moves ("null" positions)
                         moveRanks = _.reduce(data, function (moveRanks, mark, pos) {
-                            if (mark === null) moveRanks[pos] = defaultRank;
+                            if (mark === null) moveRanks[pos] = 0;
                             return moveRanks;
                         }, {});
 
@@ -13205,7 +13202,7 @@ System.register('src/models/Intel', ['npm:babel-runtime@5.8.20/helpers/get', 'np
                         for (var type in plans) {
 
                             // adjust value based on plan type
-                            var planValue = (type == 'defense' ? 3 : type == 'offense' ? 2 : 1) * weight;
+                            var planValue = type == 'defense' ? 2 / size : type == 'offense' ? 1 / size : 0;
 
                             var _iteratorNormalCompletion2 = true;
                             var _didIteratorError2 = false;
@@ -13215,9 +13212,24 @@ System.register('src/models/Intel', ['npm:babel-runtime@5.8.20/helpers/get', 'np
                                 for (var _iterator2 = _getIterator(plans[type]), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                                     var plan = _step2.value;
 
+                                    // win immediately, if offensive plan has one remaining move
+                                    if (type == 'offense' && plan.count[null] === 1) {
+
+                                        // plan.state = {
+                                        //     '0': null
+                                        //     '1': 'o'
+                                        //     '2': 'o'
+                                        // }
+
+                                        return parseInt(_.reduce(plan.state, function (key, value, index) {
+                                            if (key) return key;
+                                            if (value === null) return index;
+                                        }, null));
+                                    }
+
                                     // adjust value based on moves left
                                     // i.e., place priority on plans with fewer remaining moves
-                                    var moveValue = -1 * plan.count[null];
+                                    var moveValue = Math.pow(size, size - plan.count[null]);
 
                                     // example the current state for this plan
                                     for (var pos in plan.state) {
@@ -13258,7 +13270,7 @@ System.register('src/models/Intel', ['npm:babel-runtime@5.8.20/helpers/get', 'np
 
                             return bestMove;
                         }, {
-                            rank: defaultRank,
+                            rank: 0,
                             positions: []
                         });
 
@@ -13291,7 +13303,7 @@ System.register('src/models/Intel', ['npm:babel-runtime@5.8.20/helpers/get', 'np
 
                                 var state = _.pick(data, solution),
                                     count = _.countBy(state),
-                                    type = undefined;
+                                    type = false;
 
                                 // skip solutions where no moves left
                                 if (!count[null]) continue;
